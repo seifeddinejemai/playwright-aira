@@ -58,10 +58,17 @@ export default defineConfig({
     },
 
     {
+      
       name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    },
+      use: {
+        ...devices['Desktop Firefox'],
+        // Use prepared auth state.
+        storageState: 'playwright/.auth/user.json',
+      },
+      dependencies: ['setup'],
 
+      
+    },
     {
       name: 'webkit',
       use: { ...devices['Desktop Safari'] },

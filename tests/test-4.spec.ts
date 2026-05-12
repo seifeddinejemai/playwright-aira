@@ -1,56 +1,57 @@
 import { test, expect } from '@playwright/test';
+import { Equipepage } from '../pages/equipespage';
 
 
 test.describe('aira case test', () => {
-
-  test.beforeEach(async ({page}) =>{
-
-    await page.goto('https://app-uat.codereview.allence.cloud/auth/login');
-   
+ test.beforeEach(async ({page}) =>{
+    await page.route("**/*",(route)=>{
+      const url =route.request().url();
+      if(
+        url.includes("ads")||      // bloquer les pubs
+        url.includes("socket.io")||   //bloquer les connexions socket.io
+        url.includes("analytics")   //bloquer les Google Analytics
+      ){
+        route.abort();
+      } else{
+        route.continue();
+      }
+    })
+    const equipepages = new Equipepage(page) ;
+    await equipepages.navigateToApp();
   });
 
+//  test('test1', async ({ page }) => {
+  
+//     await page.goto('https://app-uat.codereview.allence.cloud/client/teams');
+//     // await page.locator('.spinner-overlay').waitFor({ state: 'detached' });
+//     await page.waitForLoadState('networkidle');
+//     await page.getByRole('button', { name: 'Projet' }).click();
 
+//     await page.getByRole('button', { name: 'Réinitialiser' }).click();
+//     await page.getByRole('link', { name: 'bar_chart Stats' }).click();
+//     // await page.getByRole('button', { name: 'S', exact: true }).click();
+//     // await page.getByRole('menuitem', { name: 'logout Déconnexion' }).click();
+//   });
 
-
- test('test1', async ({ page }) => {
-
-   await page.goto('https://app-uat.codereview.allence.cloud/client/teams');
-    // await page.locator('.spinner-overlay').waitFor({ state: 'detached' });
+  test('creer une equipe et la supprimer', async ({ page }) => {
+    const equipepages = new Equipepage(page) ;
+    await equipepages.createteam('#playwright-seiftest', '#playwright-test', 'publique');
     await page.waitForLoadState('networkidle');
-    await page.getByRole('button', { name: 'Projet' }).click();
-
-    await page.getByRole('button', { name: 'Réinitialiser' }).click();
-    await page.getByRole('link', { name: 'bar_chart Stats' }).click();
-    // await page.getByRole('button', { name: 'S', exact: true }).click();
-    // await page.getByRole('menuitem', { name: 'logout Déconnexion' }).click();
-
-  });
-
-  test('test', async ({ page }) => {
-   
+    await equipepages.deletefirstteam();
     //await page.locator('.spinner-overlay').waitFor({ state: 'detached' });
     //await page.waitForURL('https://app-uat.codereview.allence.cloud/client/teams');
-    await page.goto('https://app-uat.codereview.allence.cloud/client/teams');
-    await page.waitForLoadState('networkidle');
-
-    // await page.locator('.spinner-overlay').waitFor({ state: 'detached' });
-
-    await page.getByRole('button', { name: /créer une équipe/i }).click();
-    // await page.getByRole('button', { name: 'créer une équipe' }).click();
-    await page.getByRole('textbox', { name: 'Nom de l\'équipe' }).fill('#playwright-seiftest');
-    await page.getByRole('textbox', { name: 'Description' }).click();
-    await page.getByRole('textbox', { name: 'Description' }).fill('#playwright-test');
-    await page.getByRole('button', { name: 'Enregistrer' }).click();
-    await page.locator('.spinner-overlay').waitFor({ state: 'detached' });
-
-    // await page.getByRole('button', { name: 'S', exact: true }).click();
-    // await page.getByRole('menuitem', { name: 'logout Déconnexion' }).click();
+    //await page.goto('https://app-uat.codereview.allence.cloud/client/teams');
+    
   });
+  
+  test.afterEach(async ({page}) =>{
+        const equipepages = new Equipepage(page) ;
 
-test.afterEach(async ({page}) =>{
 
-    await page.getByRole('button', { name: 'S', exact: true }).click();
-    await page.getByRole('menuitem', { name: 'logout Déconnexion' }).click();
+  await equipepages.Deconnexion();
+
+//     await page.getByRole('button', { name: 'S', exact: true }).click();
+//     await page.getByRole('menuitem', { name: 'logout Déconnexion' }).click();
    
   });
 
