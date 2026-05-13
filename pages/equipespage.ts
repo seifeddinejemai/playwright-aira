@@ -15,10 +15,6 @@ export class Equipepage {
 
 
 
-    /**
-     * 
-     * @param {import('@playwright/test').Page}
-     */
     constructor(page: Page) {
         this.page = page;
         this.Teamsbt = page.getByRole('button', { name: / Équipe/i });
@@ -48,7 +44,6 @@ export class Equipepage {
 
 
     async createteam(tname: string, description: string, type: 'publique' | 'privee' = 'publique') {
-        //await this.page.goto('https://app-uat.codereview.allence.cloud/client/teams');
         await this.page.waitForLoadState('networkidle');
         await this.Addnewteambt.click();
         await this.page.waitForLoadState('networkidle');
