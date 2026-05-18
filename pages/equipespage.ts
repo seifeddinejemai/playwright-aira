@@ -12,6 +12,7 @@ export class Equipepage {
     readonly confirmDeleteButton: Locator;
     readonly cancelDeleteButton: Locator;
     private readonly baseUrl = 'https://app-uat.codereview.allence.cloud';
+    private team_name:string =""
 
 
 
@@ -44,6 +45,7 @@ export class Equipepage {
 
 
     async createteam(tname: string, description: string, type: 'publique' | 'privee' = 'publique') {
+        this.team_name=tname;
         await this.page.waitForLoadState('networkidle');
         await this.Addnewteambt.click();
         await this.page.waitForLoadState('networkidle');
@@ -60,15 +62,18 @@ export class Equipepage {
         await this.page.waitForLoadState('networkidle');
     }
 
-    async deletefirstteam() {
-        // Cliquer sur le premier bouton delete
-        await this.deleteButtons.first().click();
+    async deleteteam() {
+        
+        await this.getDeleteButtonForTeam(this.team_name).click();
+
+      
 
         // Attendre que la modale de confirmation s'ouvre
         await this.confirmDeleteButton.waitFor({ state: 'visible' });
 
         // Confirmer la suppression
         await this.confirmDeleteButton.click();
+        // await this.cancelDeleteteam()
 
         // Attendre la fin du chargement
         //await this.spinner.waitFor({ state: 'detached' });
@@ -76,14 +81,25 @@ export class Equipepage {
 
     }
 
-    async cancelDeletefirstteam() {
-        await this.deleteButtons.first().click();
+    async cancelDeleteteam() {
+        await this.getDeleteButtonForTeam(this.team_name).click();
         await this.cancelDeleteButton.waitFor({ state: 'visible' });
         await this.cancelDeleteButton.click();
+        await this.confirmDeleteButton.waitFor({ state: 'hidden' });
+
     }
 
     async Deconnexion (){
     await this.page.locator('button.avatar.mat-mdc-menu-trigger').click();
     await this.page.getByRole('menuitem', { name: 'logout Déconnexion' }).click();
     }
+
+// ✅ Récupérer la ligne (tr) contenant le nom de l'équipe, puis le bouton delete dans cette ligne
+getDeleteButtonForTeam(teamName: string): Locator {
+    return this.page
+        .locator('tr')
+        .filter({ has: this.page.locator('td.mat-column-teamName', { hasText: teamName }) })
+        .locator('button mat-icon:text-is("delete")');
+}
+
 }    

@@ -61,7 +61,8 @@ test.describe('aira case test', () => {
     const equipepages = new Equipepage(page);
     await equipepages.createteam('#playwright-seiftest', '#playwright-test', 'publique');
     await page.waitForLoadState('networkidle');
-    await equipepages.deletefirstteam();
+    await equipepages.cancelDeleteteam();
+    await equipepages.deleteteam();
    
   
 
