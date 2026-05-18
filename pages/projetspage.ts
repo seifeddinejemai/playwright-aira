@@ -188,56 +188,48 @@ export class Projetpage {
     framework: string,
     equipe: string
 ) {
-    // console.log(language,framework,'..................');
-    
     await this.addprojectbt.click();
-
-    // ✅ Attendre disparition du spinner après ouverture du formulaire
     await this.spinner.waitFor({ state: 'detached' });
 
     await this.giturlinput.fill(giturl);
     await this.depotinput.fill(depot);
     await this.tokenInput.fill(token);
-
-    // ✅ Attendre à nouveau le spinner (peut réapparaître après fill du token)
     await this.spinner.waitFor({ state: 'detached' });
 
-    // ✅ force: true ignore tous les éléments qui interceptent
+    // ✅ Sélectionner le langage
     await this.languageSelect.click();
-    
-
-    const escapedLanguage = this.regFunction(language)
-
+    const escapedLanguage = this.regFunction(language);
     await this.page.getByRole('option', {
-    name: new RegExp(`^${escapedLanguage}$`),
-    selected: false
+        name: new RegExp(`^${escapedLanguage}$`),
     }).click();
 
+    // ✅ Attendre que le panel se ferme avant d'ouvrir le suivant
+    await this.page.locator('mat-option').first().waitFor({ state: 'detached' });
 
-    const escapedFramework = this.regFunction(framework)
-
+    // ✅ Sélectionner le framework — UN SEUL clic sur l'option (suppression du doublon)
     await this.frameworkSelect.click();
-     await this.page.getByRole('option', {
-    name: new RegExp(`^${escapedFramework}$`),
-    selected: false
+    const escapedFramework = this.regFunction(framework);
+    await this.page.getByRole('option', {
+        name: new RegExp(`^${escapedFramework}$`),
     }).click();
-    await this.page.locator('mat-option span', { hasText: framework }).click();
-    // await this.page.getByRole('option', { name: framework, exact: false }).click();
 
-    const escapedTeam= this.regFunction(equipe)
+    // ✅ Attendre fermeture du panel framework avant d'ouvrir équipe
+    await this.page.locator('mat-option').first().waitFor({ state: 'detached' });
 
+    // ✅ Sélectionner l'équipe
+    await this.equipeSelect.click();
 
-    // await this.choisirEquipe(equipe);
-     await this.equipeSelect.click();
-     await this.page.getByRole('option', {
-    name: new RegExp(`^${escapedTeam}$`),
-    selected: false
+    // ✅ Attendre que les options soient visibles avant de cliquer
+    await this.page.waitForSelector('mat-option', { state: 'visible' });
+
+    const escapedTeam = this.regFunction(equipe);
+    await this.page.getByRole('option', {
+        name: new RegExp(`^${escapedTeam}$`),
     }).click();
 
     await this.saveButton.click();
     await this.spinner.waitFor({ state: 'detached' });
 }
-
 
 regFunction(str:string){
         return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');

@@ -1,0 +1,26 @@
+{
+  "default": {
+    "requireModule": [
+      "ts-node/register"
+    ],
+    "tags": "",
+    "paths": [
+      "features/**/*.feature"
+    ],
+    "require": [
+      "features/**/*.ts",
+      "src/steps/**/*.ts",
+      "src/hooks/**/*.ts"
+    ],
+    "retry": 1,
+    "timeout": 30000,
+    "format": [
+      "progress-bar",
+      "json:test-results/cucumber-report.json",
+      "html:test-results/html-report.html"
+    ],
+    "formatOptions": {
+      "snippetInterface": "async-await"
+    }
+  }
+}

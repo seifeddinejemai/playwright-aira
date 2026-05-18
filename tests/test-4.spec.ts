@@ -34,22 +34,14 @@ test.describe('aira case test', () => {
   //     // await page.getByRole('menuitem', { name: 'logout Déconnexion' }).click();
   //   });
 
-//   test('creer une equipe et la supprimer', async ({ page }) => {
-//     const equipepages = new Equipepage(page);
-//     await equipepages.createteam('#playwright-seiftest', '#playwright-test', 'publique');
-//     await page.waitForLoadState('networkidle');
-//     await equipepages.deletefirstteam();
-   
-   
-//    //** //await page.locator('.spinner-overlay').waitFor({ state: 'detached' });
-//     //await page.waitForURL('https://app-uat.codereview.allence.cloud/client/teams');
-//     //await page.goto('https://app-uat.codereview.allence.cloud/client/teams');**
-// *
-//   });
+  test('creer une equipe ', async ({ page }) => {
+    const equipepages = new Equipepage(page);
+    await equipepages.createteam('seiftest', 'seiftest', 'publique');
+    await page.waitForLoadState('networkidle');
 
+  });
 
- 
-test('creer un projet', async ({ page }) => {
+  test('creer un projet', async ({ page }) => {
     const projetpage = new Projetpage(page);
     await projetpage.listeprojets();
     await projetpage.createproject(
@@ -62,7 +54,21 @@ test('creer un projet', async ({ page }) => {
     );
 });
 
+  
+  
+  
+  test('creer une equipe et la supprimer', async ({ page }) => {
+    const equipepages = new Equipepage(page);
+    await equipepages.createteam('#playwright-seiftest', '#playwright-test', 'publique');
+    await page.waitForLoadState('networkidle');
+    await equipepages.deletefirstteam();
+   
+  
+
   });
+
+
+ 
 
 
 
@@ -78,4 +84,5 @@ test('creer un projet', async ({ page }) => {
 
 
 
+});
 
