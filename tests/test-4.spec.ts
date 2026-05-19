@@ -21,18 +21,7 @@ test.describe('aira case test', () => {
     await equipepages.navigateToApp();
   });
 
-  //  test('test1', async ({ page }) => {
 
-  //     await page.goto('https://app-uat.codereview.allence.cloud/client/teams');
-  //     // await page.locator('.spinner-overlay').waitFor({ state: 'detached' });
-  //     await page.waitForLoadState('networkidle');
-  //     await page.getByRole('button', { name: 'Projet' }).click();
-
-  //     await page.getByRole('button', { name: 'Réinitialiser' }).click();
-  //     await page.getByRole('link', { name: 'bar_chart Stats' }).click();
-  //     // await page.getByRole('button', { name: 'S', exact: true }).click();
-  //     // await page.getByRole('menuitem', { name: 'logout Déconnexion' }).click();
-  //   });
 
   test('creer une equipe ', async ({ page }) => {
     const equipepages = new Equipepage(page);
