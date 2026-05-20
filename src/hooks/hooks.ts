@@ -6,17 +6,28 @@ let context: BrowserContext;
 let page: Page;
 
 BeforeAll(async () => {
-  browser = await chromium.launch({
-    headless: false
-  });
+  browser = await chromium.launch({ headless: false });
 });
 
 Before(async function () {
   context = await browser.newContext();
   page = await context.newPage();
 
-  // disponible dans les steps
+  await page.route("**/*", (route) => {
+    const url = route.request().url();
+    if (
+      url.includes("socket.io") ||
+      url.includes("analytics") ||
+      url.includes("ads")
+    ) {
+      route.abort();
+    } else {
+      route.continue();
+    }
+  });
+
   this.page = page;
+  this.loginPage = null; // réinitialisé à chaque scénario
 });
 
 After(async function ({ result }) {
@@ -26,7 +37,6 @@ After(async function ({ result }) {
       fullPage: true
     });
   }
-
   await context.close();
 });
 

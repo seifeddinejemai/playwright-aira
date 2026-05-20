@@ -30,9 +30,59 @@ test.describe('aira case test', () => {
 
   });
 
+  test('gerer une equipe', async ({ page }) => {
+    const equipepages = new Equipepage(page);
+
+    // ✅ Ouvrir la gestion de l'équipe 'seiftest'
+    await equipepages.openManageTeam('seiftest');
+
+    // ✅ Rechercher avec un terme invalide
+    await equipepages.searchMember('zzz');
+
+    // ✅ Réinitialiser la recherche
+    await equipepages.resetSearch();
+
+    // ✅ Rechercher avec un terme valide
+    await equipepages.searchMember('sei');
+
+    // ✅ Vider la recherche
+    await equipepages.searchMember('');
+
+    // ✅ Aller sur l'onglet Invitations
+    await equipepages.goToInvitationsTab();
+
+    // ✅ Inviter un membre
+    await equipepages.inviteMember('raniabenammar491@gmail.com', 'DEV');
+
+    // ✅ Modifier le rôle du membre (DEV → MAINTAINER)
+await equipepages.editMemberRole('MAINTAINER', 'youssefbenmiled40@gmail.com');
+
+    // ✅ Renvoyer la demande
+    await equipepages.resendInvitation();
+
+    // ✅ Supprimer le membre
+    await equipepages.deleteMember();
+});
+
   test('creer un projet', async ({ page }) => {
     const projetpage = new Projetpage(page);
     await projetpage.listeprojets();
+    await projetpage.createproject(
+      'https://gitlab.com/',
+      '82160145',
+      'glpat-QcELBQxN3a9FOq6Dj7imuGM6MQpvOjEKdTprcDhjMg8.01.170dmd12h',
+      'Node.JS',
+      'Nest.JS',
+      'seiftest'
+    );
+  });
+
+test('modifier et supprimer un projet', async ({ page }) => {
+    const projetpage = new Projetpage(page);
+
+    await projetpage.listeprojets();
+
+    // ✅ Créer le projet (inclut déjà la navigation et le waitFor more_vert)
     await projetpage.createproject(
         'https://gitlab.com/',
         '82160145',
@@ -41,24 +91,28 @@ test.describe('aira case test', () => {
         'Nest.JS',
         'seiftest'
     );
+
+    // ✅ Plus besoin du waitFor ici — déjà géré dans createproject()
+    await projetpage.editproject('Python', 'Chalice', 0);
+
+    await page.waitForTimeout(1000);
+
+    await projetpage.deleteproject(0);
 });
 
-  
-  
-  
   test('creer une equipe et la supprimer', async ({ page }) => {
     const equipepages = new Equipepage(page);
     await equipepages.createteam('#playwright-seiftest', '#playwright-test', 'publique');
     await page.waitForLoadState('networkidle');
     await equipepages.cancelDeleteteam();
     await equipepages.deleteteam();
-   
-  
+
+
 
   });
 
 
- 
+
 
 
 
@@ -66,8 +120,8 @@ test.describe('aira case test', () => {
     const equipepages = new Equipepage(page);
     await equipepages.Deconnexion();
 
-        // await page.getByRole('button', { name: 'S', exact: true }).click();
-        // await page.getByRole('menuitem', { name: 'logout Déconnexion' }).click();
+    // await page.getByRole('button', { name: 'S', exact: true }).click();
+    // await page.getByRole('menuitem', { name: 'logout Déconnexion' }).click();
 
   });
 

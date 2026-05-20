@@ -1,9 +1,8 @@
-# @login
 Feature: verify login
 
   Background:
     Given I navigate to "https://app-uat.codereview.allence.cloud/auth/login"
-  # @valid
+
   Scenario: verify user is able to navigate with valid credentials
     When I enter my email "seifeddinejemai@gmail.com"
     And I enter my password "sei756"
@@ -17,9 +16,8 @@ Feature: verify login
     Then I should see "<msgErr>"
 
     Examples:
-      | email                     | password | msgErr                  |
-      # | seifeddinejemai@gmail.com | sei7     | Identifiants invalides. |
-      # | seifeddine@gmail.com      | sei756   | Identifiants invalides. |
-      | seifeddinejemai@gmail.com |          | Le mot de passe requis. |
-      |                           | sei756   | E-mail requis.          |
-      |                           |          |Le mot de passe requis. |
+      | email                     | password | msgErr                      |
+      | seifeddinejemai@gmail.com | sei7     | Identifiants invalides.     |
+      | seifeddine@gmail.com      | sei756   | L'utilisateur n'existe pas. |
+      | seifeddinejemai@gmail.com |          | Le mot de passe requis.     |
+      |                           | sei756   | E-mail requis.              |

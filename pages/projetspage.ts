@@ -1,121 +1,3 @@
-// import { expect, type Locator, type Page } from '@playwright/test';
-
-// export class Projetpage {
-//     readonly page: Page;
-//     readonly projectbt: Locator;
-//     readonly addprojectbt: Locator;
-//     readonly giturlinput: Locator;
-//     readonly depotinput: Locator;
-//     readonly tokenInput: Locator;
-//     readonly languageSelect: Locator;
-//     readonly equipeSelect: Locator;
-//     readonly tutorielButton: Locator; 
-//     readonly tutorielDialog: Locator;
-//     readonly nextButton: Locator;
-//     readonly previousButton: Locator;
-//     readonly closeButton: Locator;
-//     readonly saveButton: Locator;
-//     readonly frameworkSelect: Locator;
-
-
-
-
-
-
-//     constructor(page: Page) {
-//         this.page = page;
-//         this.projectbt = page.getByRole('button', { name: 'Projet', exact: true });
-//         this.addprojectbt = page.getByRole('button', {name: ' créer un projet '});
-//         this.giturlinput = page.getByRole('textbox', {name: 'https://plateform.xyz'});
-//         this.depotinput =page.getByRole('textbox', {name: 'ID du projet / Nom du dépôt'});
-//         this.tokenInput = page.getByRole('textbox', {name: 'Entrez votre jeton d\'accès'}); 
-//         this.tutorielButton=page.getByText('Tutoriel');
-//         this.tutorielDialog=page.getByRole('dialog');
-//         this.nextButton=page.locator('button:has(mat-icon:text("navigate_next"))');
-//         this.previousButton=page.locator('button:has(mat-icon:text("navigate_before"))' );
-//         this.closeButton=page.getByRole('button', {name: 'Close'});
-//         this.languageSelect = page.locator('mat-select[formcontrolname="language"] .mat-mdc-select-trigger');
-//         this.equipeSelect = page.getByRole('combobox', { name: 'Choisir une équipe' });
-//         this.saveButton = page.getByRole('button', { name: 'Enregistrer' });
-//         this.frameworkSelect = page.locator('mat-select[formcontrolname="framework"] .mat-mdc-select-trigger');
-
-
-//     }
-
-
-//     // async ouvrirListeEquipes() {
-//     //     await this.equipeSelect.click();
-//     // }
-
-//    async listeprojets() {
-//         console.log("######,",this.projectbt);
-
-//     await this.projectbt.click();
-//     //await this.page.waitForURL('**/teams?tab=projects');
-//     await this.page.waitForLoadState('networkidle');
-//     }
-//     async choisirEquipe(nomEquipe: string) {
-//         await this.equipeSelect.click();
-//         await this.page.getByRole('option', {name: nomEquipe }).click();
-//     }
-
-
-// //    async createproject(giturl: string,depot: string,token: string,language: string,equipe: string) {
-
-// //     await this.addprojectbt.click();
-// //     await this.giturlinput.fill(giturl);
-// //     await this.depotinput.fill(depot);
-// //     await this.tokenInput.fill(token);
-// //     await expect(this.languageSelect).toBeVisible();
-// //     await this.languageSelect.click();
-// //     await this.page.waitForLoadState('networkidle');
-// //     await this.page.getByRole('option', { name: language }).click();
-
-// //     await this.choisirEquipe(equipe);
-
-// //     await this.saveButton.click();
-// //     await this.page.waitForLoadState('networkidle');
-
-// // }
-
-// async createproject(
-//     giturl: string,
-//     depot: string,
-//     token: string,
-//     language: string,
-//     framework: string,
-//     equipe: string
-// ) {
-//     await this.addprojectbt.click();
-//     await this.page.waitForLoadState('networkidle');
-
-//     // ✅ Remplir l'URL git
-//     await this.giturlinput.fill(giturl);
-
-//     // ✅ Remplir l'ID du dépôt
-//     await this.depotinput.fill(depot);
-
-//     // ✅ Remplir le token
-//     await this.tokenInput.fill(token);
-
-//     // ✅ Sélectionner le langage
-//     await this.languageSelect.click();
-//     await this.page.getByRole('option', { name: language, exact: true }).click();
-    
-
-//     // ✅ Sélectionner le framework
-//     await this.frameworkSelect.click();
-//     await this.page.getByRole('option', { name: framework, exact: true }).click();
-
-//     // ✅ Sélectionner l'équipe
-//     await this.choisirEquipe(equipe);
-
-//     await this.saveButton.click();
-//     await this.page.locator('.spinner-overlay').waitFor({ state: 'detached' });
-// }
-// }
-
-
 import { expect, type Locator, type Page } from '@playwright/test';
 
 export class Projetpage {
@@ -135,7 +17,11 @@ export class Projetpage {
     readonly closeButton: Locator;
     readonly saveButton: Locator;
     readonly spinner: Locator;
-
+    readonly moreVertButton: Locator;
+    readonly editMenuItem: Locator;
+    readonly deleteMenuItem: Locator;
+    readonly confirmDeleteButton: Locator;
+    readonly confirmDeleteDialog: Locator;
     constructor(page: Page) {
         this.page = page;
         this.projectbt = page.getByRole('button', { name: 'Projet', exact: true });
@@ -148,22 +34,27 @@ export class Projetpage {
         this.nextButton = page.locator('button:has(mat-icon:text("navigate_next"))');
         this.previousButton = page.locator('button:has(mat-icon:text("navigate_before"))');
         this.closeButton = page.getByRole('button', { name: 'Close' });
+        this.moreVertButton = page.getByRole('button').filter({ hasText: 'more_vert' });
+        this.editMenuItem = page.getByRole('menuitem', { name: 'Mettez à jour le projet' });
+        this.deleteMenuItem = page.getByRole('menuitem', { name: 'Supprimer le projet' });
+        this.confirmDeleteButton = page.getByRole('button', { name: 'Confirmer' });
+        this.confirmDeleteDialog = page.getByRole('dialog');
 
         // ✅ .mat-mdc-select-trigger évite l'interception par mat-label
         // this.languageSelect = page.locator('mat-select[formcontrolname="language"] .mat-mdc-select-trigger');
-        this.languageSelect= page
-  .locator('mat-form-field')
-  .filter({ has: page.locator('mat-select[formcontrolname="language"]') })
+        this.languageSelect = page
+            .locator('mat-form-field')
+            .filter({ has: page.locator('mat-select[formcontrolname="language"]') })
 
         this.frameworkSelect = page
-         .locator('mat-form-field')
-  .filter({ has: page.locator('mat-select[formcontrolname="framework"]') })
+            .locator('mat-form-field')
+            .filter({ has: page.locator('mat-select[formcontrolname="framework"]') })
 
-  
+
         // locator('mat-select[formcontrolname="framework"] .mat-mdc-select-trigger');
 
         this.equipeSelect = page.locator('mat-form-field')
-  .filter({ has: page.locator('mat-select[formcontrolname="teamId"]') })
+            .filter({ has: page.locator('mat-select[formcontrolname="teamId"]') })
         // page.getByRole('combobox', { name: 'Choisir une équipe' });
         this.saveButton = page.getByRole('button', { name: 'Enregistrer' });
         this.spinner = page.locator('.spinner-overlay');
@@ -175,12 +66,8 @@ export class Projetpage {
         await this.page.waitForLoadState('networkidle');
     }
 
-    // async choisirEquipe(nomEquipe: string) {
-    //     await this.equipeSelect.click();
-    //     await this.page.getByRole('option', { name: nomEquipe }).click();
-    // }
 
-    async createproject(
+   async createproject(
     giturl: string,
     depot: string,
     token: string,
@@ -196,43 +83,115 @@ export class Projetpage {
     await this.tokenInput.fill(token);
     await this.spinner.waitFor({ state: 'detached' });
 
-    // ✅ Sélectionner le langage
     await this.languageSelect.click();
-    const escapedLanguage = this.regFunction(language);
     await this.page.getByRole('option', {
-        name: new RegExp(`^${escapedLanguage}$`),
+        name: new RegExp(`^${this.regFunction(language)}$`),
     }).click();
-
-    // ✅ Attendre que le panel se ferme avant d'ouvrir le suivant
     await this.page.locator('mat-option').first().waitFor({ state: 'detached' });
 
-    // ✅ Sélectionner le framework — UN SEUL clic sur l'option (suppression du doublon)
     await this.frameworkSelect.click();
-    const escapedFramework = this.regFunction(framework);
     await this.page.getByRole('option', {
-        name: new RegExp(`^${escapedFramework}$`),
+        name: new RegExp(`^${this.regFunction(framework)}$`),
     }).click();
-
-    // ✅ Attendre fermeture du panel framework avant d'ouvrir équipe
     await this.page.locator('mat-option').first().waitFor({ state: 'detached' });
 
-    // ✅ Sélectionner l'équipe
     await this.equipeSelect.click();
-
-    // ✅ Attendre que les options soient visibles avant de cliquer
     await this.page.waitForSelector('mat-option', { state: 'visible' });
-
-    const escapedTeam = this.regFunction(equipe);
     await this.page.getByRole('option', {
-        name: new RegExp(`^${escapedTeam}$`),
+        name: new RegExp(`^${this.regFunction(equipe)}$`),
     }).click();
 
     await this.saveButton.click();
     await this.spinner.waitFor({ state: 'detached' });
+
+    // ✅ Re-naviguer vers la liste des projets après création
+    await this.page.goto('https://app-uat.codereview.allence.cloud/client/teams?tab=projects');
+    await this.page.waitForLoadState('networkidle');
+
+    // ✅ Attendre que les boutons more_vert soient visibles
+    await this.moreVertButton.first().waitFor({ state: 'visible', timeout: 15000 });
 }
 
-regFunction(str:string){
+    /**
+     * Ouvre le menu ⋮ d'un projet par son index (0 = premier projet)
+     * Si projectIndex n'est pas fourni, utilise le premier (0)
+     */
+    private async openMoreMenu(projectIndex: number = 0) {
+    // ✅ Vérifier qu'il y a bien des projets
+    const count = await this.moreVertButton.count();
+    console.log(`more_vert buttons found: ${count}`);
+
+    if (count === 0) {
+        throw new Error('Aucun projet trouvé dans la liste');
+    }
+
+    await this.moreVertButton.nth(projectIndex).scrollIntoViewIfNeeded();
+    await this.moreVertButton.nth(projectIndex).click();
+    await this.editMenuItem.waitFor({ state: 'visible', timeout: 5000 });
+}
+
+    /**
+     * Modifier le langage d'un projet
+     * @param newLanguage  - nouveau langage ex: 'Angular'
+     * @param projectIndex - index du projet dans la liste (0 = premier)
+     */
+    async editproject(
+        newLanguage: string,
+        newFramework: string,
+        projectIndex: number = 0
+    ) {
+        // ✅ Ouvrir le menu ⋮ du projet ciblé
+        await this.openMoreMenu(projectIndex);
+
+        // ✅ Cliquer sur "Mettez à jour le projet"
+        await this.editMenuItem.click();
+        await this.spinner.waitFor({ state: 'detached' });
+
+        // ✅ Modifier le langage
+        await this.languageSelect.click();
+        await this.page.getByRole('option', {
+            name: new RegExp(`^${this.regFunction(newLanguage)}$`),
+        }).click();
+        await this.page.locator('mat-option').first().waitFor({ state: 'detached' });
+
+        // ✅ Modifier le framework (était manquant avant)
+        await this.frameworkSelect.click();
+        await this.page.getByRole('option', {
+            name: new RegExp(`^${this.regFunction(newFramework)}$`),
+        }).click();
+        await this.page.locator('mat-option').first().waitFor({ state: 'detached' });
+
+        // ✅ Sauvegarder
+        await this.saveButton.click();
+        await this.spinner.waitFor({ state: 'detached' });
+        await this.page.waitForLoadState('networkidle');
+        await this.moreVertButton.first().waitFor({ state: 'visible', timeout: 30000 });
+
+
+    }
+
+    /**
+     * Supprimer un projet
+     * @param projectIndex - index du projet dans la liste (0 = premier)
+     */
+    async deleteproject(projectIndex: number = 0) {
+        // ✅ Ouvrir le menu ⋮ du projet ciblé
+        await this.openMoreMenu(projectIndex);
+
+        // ✅ Cliquer sur "Supprimer le projet"
+        await this.deleteMenuItem.click();
+
+        // ✅ Attendre le dialog et confirmer
+        await this.confirmDeleteDialog.waitFor({ state: 'visible', timeout: 5000 });
+        await this.confirmDeleteButton.click();
+        await this.spinner.waitFor({ state: 'detached' });
+    }
+
+
+
+
+    regFunction(str: string) {
         return str.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-}
+    }
 }
