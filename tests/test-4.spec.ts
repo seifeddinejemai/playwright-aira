@@ -55,7 +55,7 @@ test.describe('aira case test', () => {
     await equipepages.inviteMember('raniabenammar491@gmail.com', 'DEV');
 
     // ✅ Modifier le rôle du membre (DEV → MAINTAINER)
-await equipepages.editMemberRole('MAINTAINER', 'youssefbenmiled40@gmail.com');
+await equipepages.editMemberRole('MAINTAINER', 'raniabenammar491@gmail.com');
 
     // ✅ Renvoyer la demande
     await equipepages.resendInvitation();
