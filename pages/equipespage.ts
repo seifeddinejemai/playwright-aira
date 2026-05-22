@@ -507,7 +507,7 @@
 import { expect, type Locator, type Page } from '@playwright/test';
 
 export class Equipepage {
-    readonly page: Page;
+     page: Page;
     readonly Addnewteambt: Locator;
     readonly Teamsbt: Locator;
     readonly tname: Locator;
@@ -608,7 +608,7 @@ export class Equipepage {
     }
 
     async Deconnexion() {
-        await this.page.waitForLoadState('networkidle');
+        // await this.page.waitForLoadState('networkidle');
 
         // ✅ Fermer tout overlay encore ouvert
         const backdrop = this.page.locator('.cdk-overlay-backdrop');
@@ -659,24 +659,61 @@ export class Equipepage {
 //     await this.page.waitForLoadState('networkidle');
 // }
 
+// async openManageTeam(teamName: string) {
+//     const row = this.page.locator('tr').filter({
+//     has: this.page.locator(
+//         `td.mat-column-teamName:text-is("${teamName}")`
+//     )
+// });
+//         console.log(await row.count());
+//         await row.highlight();
+
+//         await row
+//         .locator('button', {
+//             has: this.page.locator('mat-icon', {
+//                 hasText: 'manage_accounts'
+//             })
+//         })
+//         .click();
+
+//     await this.page.waitForLoadState('networkidle');
+// }
+
 async openManageTeam(teamName: string) {
-    const row = this.page.locator('tr').filter({
-    has: this.page.locator(
-        `td.mat-column-teamName:text-is("${teamName}")`
-    )
-});
-        console.log(await row.count());
-        await row.highlight();
+    const rows = this.page.locator('tr').filter({
+        has: this.page.locator('td.mat-column-teamName', { hasText: teamName })
+    });
 
-        await row
-        .locator('button', {
-            has: this.page.locator('mat-icon', {
-                hasText: 'manage_accounts'
-            })
-        })
-        .click();
+    const count = await rows.count();
+    let targetRow = rows.first();
 
-    await this.page.waitForLoadState('networkidle');
+    if (count > 1) {
+        for (let i = 0; i < count; i++) {
+            const row = rows.nth(i);
+            const cellText = await row.locator('td.mat-column-teamName').textContent();
+            console.log(`Row ${i}: |${cellText?.trim()}|`);
+            if (cellText?.trim() === teamName) {
+                targetRow = row;
+                break;
+            }
+        }
+    }
+
+    // ✅ Vérifier si le clic ouvre un nouvel onglet ou navigue sur la même page
+    const [newPage] = await Promise.all([
+        this.page.context().waitForEvent('page').catch(() => null), // null si pas de nouvelle page
+        targetRow.getByLabel("Gérer l'").click()
+    ]);
+
+    if (newPage) {
+        // ✅ Le bouton a ouvert un nouvel onglet — on bascule dessus
+        console.log('Nouvelle page détectée:', newPage.url());
+        await newPage.waitForLoadState('networkidle');
+        this.page = newPage as any; // basculer sur la nouvelle page
+    } else {
+        // ✅ Navigation sur la même page
+        await this.page.waitForLoadState('networkidle');
+    }
 }
 
     async searchMember(searchTerm: string) {
