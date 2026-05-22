@@ -33,35 +33,34 @@ test.describe('aira case test', () => {
   test('gerer une equipe', async ({ page }) => {
     const equipepages = new Equipepage(page);
 
-    // ✅ Ouvrir la gestion de l'équipe 'seiftest'
+    // ✅ Créer l'équipe
+    await equipepages.createteam('seiftest', 'seiftest', 'publique');
+    await page.waitForLoadState('networkidle');
+
+    // ✅ Ouvrir la gestion
     await equipepages.openManageTeam('seiftest');
 
-    // ✅ Rechercher avec un terme invalide
+    // ✅ Recherches sur l'onglet Membres (onglet par défaut)
     await equipepages.searchMember('zzz');
-
-    // ✅ Réinitialiser la recherche
     await equipepages.resetSearch();
-
-    // ✅ Rechercher avec un terme valide
     await equipepages.searchMember('sei');
-
-    // ✅ Vider la recherche
     await equipepages.searchMember('');
 
-    // ✅ Aller sur l'onglet Invitations
+    // ✅ Aller sur Invitations et inviter
     await equipepages.goToInvitationsTab();
+    await equipepages.inviteMember('youssefbenmiled40@gmail.com', 'DEV');
 
-    // ✅ Inviter un membre
-    await equipepages.inviteMember('raniabenammar491@gmail.com', 'DEV');
+    // ✅ Modifier le rôle dans Invitations (membre en attente)
+    await equipepages.editMemberRole('MAINTAINER', 'youssefbenmiled40@gmail.com');
 
-    // ✅ Modifier le rôle du membre (DEV → MAINTAINER)
-await equipepages.editMemberRole('MAINTAINER', 'raniabenammar491@gmail.com');
-
-    // ✅ Renvoyer la demande
-    await equipepages.resendInvitation();
 
     // ✅ Supprimer le membre
-    await equipepages.deleteMember();
+    await equipepages.deleteMember('youssefbenmiled40@gmail.com');
+
+    // ✅ Revenir à la liste et supprimer l'équipe
+    await page.goto('https://app-uat.codereview.allence.cloud/client/teams');
+    await page.waitForLoadState('networkidle');
+    await equipepages.deleteteam();
 });
 
   test('creer un projet', async ({ page }) => {

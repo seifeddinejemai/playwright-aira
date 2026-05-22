@@ -135,40 +135,53 @@ export class Projetpage {
      * @param newLanguage  - nouveau langage ex: 'Angular'
      * @param projectIndex - index du projet dans la liste (0 = premier)
      */
+    
+
+
     async editproject(
-        newLanguage: string,
-        newFramework: string,
-        projectIndex: number = 0
-    ) {
-        // ✅ Ouvrir le menu ⋮ du projet ciblé
-        await this.openMoreMenu(projectIndex);
+    newLanguage: string,
+    newFramework: string,
+    projectIndex: number = 0
+) {
+    await this.openMoreMenu(projectIndex);
+    await this.editMenuItem.click();
+    await this.spinner.waitFor({ state: 'detached' });
 
-        // ✅ Cliquer sur "Mettez à jour le projet"
-        await this.editMenuItem.click();
-        await this.spinner.waitFor({ state: 'detached' });
+    await this.languageSelect.click();
+    await this.page.getByRole('option', {
+        name: new RegExp(`^${this.regFunction(newLanguage)}$`),
+    }).click();
+    await this.page.locator('mat-option').first().waitFor({ state: 'detached' });
 
-        // ✅ Modifier le langage
-        await this.languageSelect.click();
-        await this.page.getByRole('option', {
-            name: new RegExp(`^${this.regFunction(newLanguage)}$`),
-        }).click();
-        await this.page.locator('mat-option').first().waitFor({ state: 'detached' });
+    await this.frameworkSelect.click();
+    await this.page.getByRole('option', {
+        name: new RegExp(`^${this.regFunction(newFramework)}$`),
+    }).click();
+    await this.page.locator('mat-option').first().waitFor({ state: 'detached' });
 
-        // ✅ Modifier le framework (était manquant avant)
-        await this.frameworkSelect.click();
-        await this.page.getByRole('option', {
-            name: new RegExp(`^${this.regFunction(newFramework)}$`),
-        }).click();
-        await this.page.locator('mat-option').first().waitFor({ state: 'detached' });
+    await this.saveButton.click();
+    await this.spinner.waitFor({ state: 'detached' });
 
-        // ✅ Sauvegarder
-        await this.saveButton.click();
-        await this.spinner.waitFor({ state: 'detached' });
+    // ✅ Re-naviguer comme dans createproject()
+    await this.page.goto('https://app-uat.codereview.allence.cloud/client/teams?tab=projects');
+    await this.page.waitForLoadState('networkidle');
+
+    // ✅ Retry jusqu'à 30s
+    let count = 0;
+    for (let i = 0; i < 6; i++) {
+        count = await this.moreVertButton.count();
+        console.log(`Tentative ${i + 1} — more_vert count: ${count}`);
+        if (count > 0) break;
+        await this.page.waitForTimeout(5000);
+        await this.page.reload();
         await this.page.waitForLoadState('networkidle');
-        await this.moreVertButton.first().waitFor({ state: 'visible', timeout: 30000 });
-
-
     }
+
+    if (count === 0) {
+        await this.page.screenshot({ path: 'screenshots/after-edit-no-project.png', fullPage: true });
+        throw new Error('Aucun projet trouvé après modification');
+    }
+}
 
     /**
      * Supprimer un projet
