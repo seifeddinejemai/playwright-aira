@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "npx cucumber-js"
+    "test": "npx cucumber-js",
+    "test:playwright": "npx playwright test",
+    "test:playwright:ci": "npx playwright test --reporter=html,junit"
   },
   "keywords": [],
   "author": "",

@@ -1,0 +1,116 @@
+pipeline {
+    agent any
+
+    environment {
+        CI          = 'true'
+        APP_URL     = 'https://app-uat.codereview.allence.cloud'
+        NODE_VERSION = '20'
+    }
+
+    options {
+        timeout(time: 30, unit: 'MINUTES')
+        buildDiscarder(logRotator(numToKeepStr: '10'))
+        disableConcurrentBuilds()
+    }
+
+    triggers {
+        pollSCM('H/5 * * * *')
+    }
+
+    stages {
+
+        stage('Checkout') {
+            steps {
+                echo '📥 Récupération du code source...'
+                checkout scm
+            }
+        }
+
+        stage('Setup Node.js') {
+            steps {
+                echo '⚙️ Vérification de Node.js...'
+                sh '''
+                    node --version
+                    npm --version
+                '''
+            }
+        }
+
+        stage('Install Dependencies') {
+            steps {
+                echo '📦 Installation des dépendances...'
+                sh 'npm ci'
+            }
+        }
+
+        stage('Install Playwright Browsers') {
+            steps {
+                echo '🌐 Installation des navigateurs Playwright...'
+                sh 'npx playwright install chromium --with-deps'
+            }
+        }
+
+        stage('Run Playwright Tests') {
+            steps {
+                echo '🧪 Exécution des tests Playwright...'
+                sh '''
+                    mkdir -p results
+                    mkdir -p screenshots
+                    npm run test:playwright:ci
+                '''
+            }
+            post {
+                always {
+                    junit 'results/junit-results.xml'
+                }
+                failure {
+                    echo '❌ Tests échoués — collecte des artefacts...'
+                }
+            }
+        }
+
+        stage('Publish HTML Report') {
+            steps {
+                echo '📊 Publication du rapport HTML...'
+                publishHTML(target: [
+                    allowMissing         : false,
+                    alwaysLinkToLastBuild: true,
+                    keepAll              : true,
+                    reportDir            : 'playwright-report',
+                    reportFiles          : 'index.html',
+                    reportName           : 'Playwright Test Report'
+                ])
+            }
+        }
+    }
+
+    post {
+        always {
+            echo '🧹 Archivage des artefacts...'
+            archiveArtifacts artifacts: 'screenshots/**', allowEmptyArchive: true
+            archiveArtifacts artifacts: 'test-results/**/*.png', allowEmptyArchive: true
+            archiveArtifacts artifacts: 'test-results/**/*.webm', allowEmptyArchive: true
+            archiveArtifacts artifacts: 'results/junit-results.xml', allowEmptyArchive: true
+        }
+        success {
+            echo '✅ Pipeline réussi !'
+            mail to: 'seifeddinejemai@gmail.com',
+                 subject: "✅ Build #${BUILD_NUMBER} — Tests Playwright réussis",
+                 body: """
+                    Build réussi sur la branche ${GIT_BRANCH}.
+                    Rapport : ${BUILD_URL}Playwright_20Test_20Report/
+                    Console  : ${BUILD_URL}console
+                 """
+        }
+        failure {
+            echo '❌ Pipeline échoué !'
+            mail to: 'seifeddinejemai@gmail.com',
+                 subject: "❌ Build #${BUILD_NUMBER} — Tests Playwright échoués",
+                 body: """
+                    Build échoué sur la branche ${GIT_BRANCH}.
+                    Console  : ${BUILD_URL}console
+                    Artefacts: ${BUILD_URL}artifact/screenshots/
+                 """
+        }
+    }
+}
