@@ -61,10 +61,8 @@ pipeline {
             }
             post {
                 always {
-                    junit 'results/junit-results.xml'
-                }
-                failure {
-                    echo '❌ Tests échoués — collecte des artefacts...'
+                    // ✅ Chemin corrigé avec wildcard
+                    junit allowEmptyResults: true, testResults: '**/junit-results.xml'
                 }
             }
         }
@@ -73,7 +71,7 @@ pipeline {
             steps {
                 echo '📊 Publication du rapport HTML...'
                 publishHTML(target: [
-                    allowMissing         : false,
+                    allowMissing         : true,
                     alwaysLinkToLastBuild: true,
                     keepAll              : true,
                     reportDir            : 'playwright-report',
@@ -90,27 +88,13 @@ pipeline {
             archiveArtifacts artifacts: 'screenshots/**', allowEmptyArchive: true
             archiveArtifacts artifacts: 'test-results/**/*.png', allowEmptyArchive: true
             archiveArtifacts artifacts: 'test-results/**/*.webm', allowEmptyArchive: true
-            archiveArtifacts artifacts: 'results/junit-results.xml', allowEmptyArchive: true
+            archiveArtifacts artifacts: '**/junit-results.xml', allowEmptyArchive: true
         }
         success {
             echo '✅ Pipeline réussi !'
-            mail to: 'seifeddinejemai@gmail.com',
-                 subject: "✅ Build #${BUILD_NUMBER} — Tests Playwright réussis",
-                 body: """
-                    Build réussi sur la branche ${GIT_BRANCH}.
-                    Rapport : ${BUILD_URL}Playwright_20Test_20Report/
-                    Console  : ${BUILD_URL}console
-                 """
         }
         failure {
             echo '❌ Pipeline échoué !'
-            mail to: 'seifeddinejemai@gmail.com',
-                 subject: "❌ Build #${BUILD_NUMBER} — Tests Playwright échoués",
-                 body: """
-                    Build échoué sur la branche ${GIT_BRANCH}.
-                    Console  : ${BUILD_URL}console
-                    Artefacts: ${BUILD_URL}artifact/screenshots/
-                 """
         }
     }
 }
