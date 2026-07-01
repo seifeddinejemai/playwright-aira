@@ -25,17 +25,27 @@ export default defineConfig({
   /* Opt out of parallel tests on CI. */
   workers: process.env.CI ? 1 : undefined,
   /* Reporter to use. See https://playwright.dev/docs/test-reporters */
-  reporter: 'html',
+  reporter: process.env.CI
+    ? [
+        ['html', { outputFolder: 'playwright-report', open: 'never' }],
+        ['junit', { outputFile: 'results/junit-results.xml' }],
+        ['list']
+      ]
+    : 'html',
   /* Shared settings for all the projects below. See https://playwright.dev/docs/api/class-testoptions. */
   use: {
-    
+        // video: 'on',
+
     /* Base URL to use in actions like `await page.goto('')`. */
     // baseURL: 'http://localhost:3000',
 
     /* Collect trace when retrying the failed test. See https://playwright.dev/docs/trace-viewer */
     trace: 'on',
        actionTimeout: 15000,      // ← timeout par action (click, fill...)
-    navigationTimeout: 50000, 
+    navigationTimeout: 50000,
+    headless: !!process.env.CI,        // ✅ headless uniquement en CI
+    screenshot: 'only-on-failure',     // ✅ screenshot si échec
+    video: process.env.CI ? 'retain-on-failure' : 'off', // ✅ vidéo si échec en CI
   },
 
   /* Configure projects for major browsers */
@@ -57,15 +67,22 @@ export default defineConfig({
       
     },
 
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-    },
+    // {
+      
+    //   name: 'firefox',
+    //   use: {
+    //     ...devices['Desktop Firefox'],
+    //   Use prepared auth state.
+    //     storageState: 'playwright/.auth/user.json',
+    //   },
+    //   dependencies: ['setup'],
 
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-    },
+      
+    // },
+    // {
+    //   name: 'webkit',
+    //   use: { ...devices['Desktop Safari'] },
+    // },
 
     /* Test against mobile viewports. */
     // {
@@ -95,4 +112,3 @@ export default defineConfig({
   //   reuseExistingServer: !process.env.CI,
   // },
 });
-
